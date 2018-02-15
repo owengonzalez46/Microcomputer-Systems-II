@@ -1,0 +1,160 @@
+   1              		.cpu cortex-m0
+   2              		.fpu softvfp
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 6
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.code	16
+  13              		.file	"main.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.global	__aeabi_f2d
+  18              		.section	.rodata
+  19              		.align	2
+  20              	.LC2:
+  21 0000 583D2025 		.ascii	"X= %.2f      Y= %.2f  \015\012\000"
+  21      2E326620 
+  21      20202020 
+  21      20593D20 
+  21      252E3266 
+  22 0019 000000   		.section	.text.main,"ax",%progbits
+  23              		.align	2
+  24              		.global	main
+  25              		.code	16
+  26              		.thumb_func
+  28              	main:
+  29              	.LFB0:
+  30              		.file 1 "../Sources/main.c"
+   1:../Sources/main.c **** #include "derivative.h" /* include peripheral declarations */
+   2:../Sources/main.c **** #include "TFC\TFC.h"
+   3:../Sources/main.c **** int main(void)
+   4:../Sources/main.c **** {	
+  31              		.loc 1 4 0
+  32              		.cfi_startproc
+  33 0000 B0B5     		push	{r4, r5, r7, lr}
+  34              	.LCFI0:
+  35              		.cfi_def_cfa_offset 16
+  36              		.cfi_offset 4, -16
+  37              		.cfi_offset 5, -12
+  38              		.cfi_offset 7, -8
+  39              		.cfi_offset 14, -4
+  40 0002 86B0     		sub	sp, sp, #24
+  41              	.LCFI1:
+  42              		.cfi_def_cfa_offset 40
+  43 0004 02AF     		add	r7, sp, #8
+  44              	.LCFI2:
+  45              		.cfi_def_cfa 7, 32
+   5:../Sources/main.c **** 	TFC_Init();	
+  46              		.loc 1 5 0
+  47 0006 FFF7FEFF 		bl	TFC_Init
+  48              	.L2:
+   6:../Sources/main.c **** 	float X_pos, Y_pos, X_servo, Y_servo;
+   7:../Sources/main.c **** 	for(;;)
+   8:../Sources/main.c **** 	{	   
+   9:../Sources/main.c **** 		        //TFC_Task must be called in your main loop.  This keeps certain processing happy (I.E. S
+  10:../Sources/main.c **** 			    TFC_Task();				    
+  49              		.loc 1 10 0
+  50 000a FFF7FEFF 		bl	TFC_Task
+  11:../Sources/main.c **** 				if(TFC_Ticker[0]=20)  {
+  51              		.loc 1 11 0
+  52 000e 174B     		ldr	r3, .L3
+  53 0010 1422     		mov	r2, #20
+  54 0012 1A60     		str	r2, [r3]
+  12:../Sources/main.c **** 					 TFC_Ticker[0] = 0; //reset the Ticker			
+  55              		.loc 1 12 0
+  56 0014 154B     		ldr	r3, .L3
+  57 0016 0022     		mov	r2, #0
+  58 0018 1A60     		str	r2, [r3]
+  13:../Sources/main.c **** 					 //Every 20 mSeconds, update the Servos
+  14:../Sources/main.c **** 				     X_pos = Get_X ();			     			
+  59              		.loc 1 14 0
+  60 001a FFF7FEFF 		bl	Get_X
+  61 001e 031C     		add	r3, r0, #0
+  62 0020 FB60     		str	r3, [r7, #12]
+  15:../Sources/main.c **** 			         Y_pos = Get_Y();
+  63              		.loc 1 15 0
+  64 0022 FFF7FEFF 		bl	Get_Y
+  65 0026 031C     		add	r3, r0, #0
+  66 0028 BB60     		str	r3, [r7, #8]
+  16:../Sources/main.c **** 			         TERMINAL_PRINTF("X= %.2f      Y= %.2f  \r\n",X_pos, Y_pos);				         
+  67              		.loc 1 16 0
+  68 002a F868     		ldr	r0, [r7, #12]
+  69 002c FFF7FEFF 		bl	__aeabi_f2d
+  70 0030 041C     		mov	r4, r0
+  71 0032 0D1C     		mov	r5, r1
+  72 0034 B868     		ldr	r0, [r7, #8]
+  73 0036 FFF7FEFF 		bl	__aeabi_f2d
+  74 003a 021C     		mov	r2, r0
+  75 003c 0B1C     		mov	r3, r1
+  76 003e 0C48     		ldr	r0, .L3+4
+  77 0040 0C49     		ldr	r1, .L3+8
+  78 0042 0092     		str	r2, [sp]
+  79 0044 0193     		str	r3, [sp, #4]
+  80 0046 221C     		mov	r2, r4
+  81 0048 2B1C     		mov	r3, r5
+  82 004a FFF7FEFF 		bl	Qprintf
+  17:../Sources/main.c **** 			         //Example, just out put the position X and Y
+  18:../Sources/main.c **** 			         Y_servo = Y_pos;
+  83              		.loc 1 18 0
+  84 004e BB68     		ldr	r3, [r7, #8]
+  85 0050 7B60     		str	r3, [r7, #4]
+  19:../Sources/main.c **** 			         X_servo = X_pos;			    
+  86              		.loc 1 19 0
+  87 0052 FB68     		ldr	r3, [r7, #12]
+  88 0054 3B60     		str	r3, [r7]
+  20:../Sources/main.c **** //********************************* put your PID controller code here ***************				    
+  21:../Sources/main.c **** 			        //Set the servo positions
+  22:../Sources/main.c **** 					TFC_SetServo(0,X_servo);
+  89              		.loc 1 22 0
+  90 0056 3B68     		ldr	r3, [r7]
+  91 0058 0020     		mov	r0, #0
+  92 005a 191C     		add	r1, r3, #0
+  93 005c FFF7FEFF 		bl	TFC_SetServo
+  23:../Sources/main.c **** 					TFC_SetServo(1,Y_servo);
+  94              		.loc 1 23 0
+  95 0060 7B68     		ldr	r3, [r7, #4]
+  96 0062 0120     		mov	r0, #1
+  97 0064 191C     		add	r1, r3, #0
+  98 0066 FFF7FEFF 		bl	TFC_SetServo
+  24:../Sources/main.c **** 				}
+  25:../Sources/main.c **** 	}
+  99              		.loc 1 25 0
+ 100 006a CEE7     		b	.L2
+ 101              	.L4:
+ 102              		.align	2
+ 103              	.L3:
+ 104 006c 00000000 		.word	TFC_Ticker
+ 105 0070 00000000 		.word	SDA_SERIAL_OUTGOING_QUEUE
+ 106 0074 00000000 		.word	.LC2
+ 107              		.cfi_endproc
+ 108              	.LFE0:
+ 110              		.text
+ 111              	.Letext0:
+ 112              		.file 2 "C:/Freescale/CW MCU v10.5/MCU/ARM_GCC_Support/ewl/EWL_C/include/cstdint"
+ 113              		.file 3 "C:/CodeWarrior/workspace/Tilt/Project_Headers/TFC\\TFC_Queue.h"
+ 114              		.file 4 "C:/CodeWarrior/workspace/Tilt/Project_Headers/TFC\\TFC_ARM_SysTick.h"
+ 115              		.file 5 "C:/CodeWarrior/workspace/Tilt/Project_Headers/TFC\\TFC_UART.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 main.c
+C:\Users\Paul\AppData\Local\Temp\ccf2FzkP.s:19     .rodata:00000000 $d
+C:\Users\Paul\AppData\Local\Temp\ccf2FzkP.s:23     .text.main:00000000 $t
+C:\Users\Paul\AppData\Local\Temp\ccf2FzkP.s:28     .text.main:00000000 main
+C:\Users\Paul\AppData\Local\Temp\ccf2FzkP.s:104    .text.main:0000006c $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+__aeabi_f2d
+TFC_Init
+TFC_Task
+Get_X
+Get_Y
+Qprintf
+TFC_SetServo
+TFC_Ticker
+SDA_SERIAL_OUTGOING_QUEUE
